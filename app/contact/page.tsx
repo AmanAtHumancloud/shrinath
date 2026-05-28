@@ -1,162 +1,99 @@
-'use client'
+import type { Metadata } from 'next'
+import { Phone, Mail, MapPin, Clock, ArrowUpRight } from 'lucide-react'
+import Link from 'next/link'
 
-import { useState } from 'react'
-import { motion } from 'framer-motion'
-import { MapPin, Phone, Mail, Clock, Send } from 'lucide-react'
+import PageHero from '../components/sections/PageHero'
+import Section from '../components/ui/Section'
+import SectionHeading from '../components/ui/SectionHeading'
+import Reveal from '../components/ui/Reveal'
+import ContactForm from '../components/forms/ContactForm'
+import MapEmbed from '../components/sections/MapEmbed'
+import { SITE } from '@/lib/site'
+import { photos } from '@/lib/images'
+
+export const metadata: Metadata = {
+  title: 'Contact',
+  description: 'Reach Shrinath Shikshan Sanstha — phone, email, address, school hours, location map, and a contact form.',
+}
+
+const DETAILS = [
+  { icon: MapPin, label: 'Address', value: SITE.address, chip: 'bg-play-orange' },
+  { icon: Phone, label: 'Phone', value: SITE.phone, href: `tel:${SITE.phone.replace(/\s/g, '')}`, chip: 'bg-play-green' },
+  { icon: Phone, label: 'Admissions desk', value: SITE.phoneSecondary, href: `tel:${SITE.phoneSecondary.replace(/\s/g, '')}`, chip: 'bg-play-blue' },
+  { icon: Mail, label: 'Email', value: SITE.email, href: `mailto:${SITE.email}`, chip: 'bg-play-yellow' },
+  { icon: Clock, label: 'School hours', value: SITE.hours, chip: 'bg-play-orange' },
+]
 
 export default function ContactPage() {
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    phone: '',
-    subject: '',
-    message: ''
-  })
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    console.log('Contact form:', formData)
-  }
-
   return (
-    <div className="pt-20">
-      <div className="bg-gradient-to-br from-blue-900 to-blue-800 text-white py-20">
-        <div className="max-w-7xl mx-auto px-4 text-center">
-          <motion.h1
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="text-4xl md:text-5xl font-bold mb-4"
-          >
-            Contact Us
-          </motion.h1>
-          <p className="text-xl text-blue-200">
-            We'd love to hear from you
-          </p>
-        </div>
-      </div>
+    <>
+      <PageHero
+        accent="yellow"
+        eyebrow="Get in touch"
+        title={<>We&apos;d love to <span className="squiggle text-play-orange">hear from you.</span></>}
+        subtitle="Questions, tours, admissions — we read every message and reply within one school day."
+        image={photos.aboutCollage1}
+        imageAlt="Reception area at Shrinath"
+      />
 
-      <div className="max-w-7xl mx-auto px-4 py-16">
-        <div className="grid lg:grid-cols-3 gap-8">
-          {/* Contact Information */}
-          <div className="space-y-6">
-            <motion.div
-              initial={{ opacity: 0, x: -30 }}
-              animate={{ opacity: 1, x: 0 }}
-              className="card"
-            >
-              <div className="flex items-start gap-3 mb-4">
-                <MapPin className="text-blue-800 mt-1" />
-                <div>
-                  <h3 className="font-semibold">Address</h3>
-                  <p className="text-gray-600">Near Main Road, Maharashtra, India</p>
-                </div>
-              </div>
-              <div className="flex items-start gap-3 mb-4">
-                <Phone className="text-blue-800 mt-1" />
-                <div>
-                  <h3 className="font-semibold">Phone</h3>
-                  <p className="text-gray-600">+91 1234567890</p>
-                </div>
-              </div>
-              <div className="flex items-start gap-3">
-                <Mail className="text-blue-800 mt-1" />
-                <div>
-                  <h3 className="font-semibold">Email</h3>
-                  <p className="text-gray-600">info@shrinathsanstha.edu</p>
-                </div>
-              </div>
-            </motion.div>
+      <Section tone="cream">
+        <div className="container-x grid lg:grid-cols-12 gap-12">
+          {/* Left details */}
+          <aside className="lg:col-span-4 space-y-8">
+            <SectionHeading eyebrow="Reach us" title="The simple way." className="!mb-4" />
 
-            <motion.div
-              initial={{ opacity: 0, x: -30 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.2 }}
-              className="card"
-            >
-              <div className="flex items-center gap-2 mb-4">
-                <Clock className="text-blue-800" />
-                <h3 className="font-semibold">Office Hours</h3>
-              </div>
-              <div className="space-y-2 text-sm text-gray-600">
-                <p>Monday - Friday: 8:00 AM - 4:00 PM</p>
-                <p>Saturday: 8:00 AM - 12:00 PM</p>
-                <p>Sunday: Closed</p>
-              </div>
-            </motion.div>
-          </div>
+            <ul className="space-y-4">
+              {DETAILS.map((d) => (
+                <li key={d.label} className="flex gap-3 items-start">
+                  <span className={`inline-flex size-10 items-center justify-center rounded-2xl text-white shrink-0 ${d.chip}`}>
+                    <d.icon size={16} strokeWidth={2.2} />
+                  </span>
+                  <div>
+                    <div className="text-[10px] uppercase tracking-[0.22em] text-saffron-700 font-semibold">{d.label}</div>
+                    {d.href ? (
+                      <a href={d.href} className="mt-1 block text-deepblue-900 link-underline text-base">{d.value}</a>
+                    ) : (
+                      <div className="mt-1 text-ink text-base">{d.value}</div>
+                    )}
+                  </div>
+                </li>
+              ))}
+            </ul>
 
-          {/* Contact Form */}
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
-            className="lg:col-span-2"
-          >
-            <div className="card">
-              <h2 className="text-2xl font-bold mb-6">Send us a Message</h2>
-              <form onSubmit={handleSubmit} className="space-y-4">
-                <div className="grid md:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Name *</label>
-                    <input
-                      type="text"
-                      value={formData.name}
-                      onChange={(e) => setFormData({...formData, name: e.target.value})}
-                      required
-                      className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Email *</label>
-                    <input
-                      type="email"
-                      value={formData.email}
-                      onChange={(e) => setFormData({...formData, email: e.target.value})}
-                      required
-                      className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
-                    />
-                  </div>
-                </div>
-                <div className="grid md:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Phone</label>
-                    <input
-                      type="tel"
-                      value={formData.phone}
-                      onChange={(e) => setFormData({...formData, phone: e.target.value})}
-                      className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Subject *</label>
-                    <input
-                      type="text"
-                      value={formData.subject}
-                      onChange={(e) => setFormData({...formData, subject: e.target.value})}
-                      required
-                      className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
-                    />
-                  </div>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Message *</label>
-                  <textarea
-                    rows={5}
-                    value={formData.message}
-                    onChange={(e) => setFormData({...formData, message: e.target.value})}
-                    required
-                    className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
-                  />
-                </div>
-                <button type="submit" className="btn-primary flex items-center gap-2">
-                  <Send size={18} />
-                  Send Message
-                </button>
-              </form>
+            <div className="rounded-[20px] bg-deepblue-950 text-cream p-6">
+              <div className="text-[10px] uppercase tracking-[0.22em] text-saffron-300 font-semibold">Admissions 2026–27</div>
+              <p className="mt-3 text-cream/90 leading-relaxed text-sm">
+                Seats are filling for the next academic year. Submit an enquiry and we&apos;ll fast-track your tour.
+              </p>
+              <Link href="/admissions" className="btn btn-saffron mt-5 text-xs px-4 py-2.5">
+                Apply now <ArrowUpRight size={14} />
+              </Link>
             </div>
-          </motion.div>
+          </aside>
+
+          {/* Right form */}
+          <div className="lg:col-span-8">
+            <Reveal>
+              <div className="rounded-[24px] border border-line bg-white p-6 md:p-9 shadow-card">
+                <SectionHeading
+                  eyebrow="Send us a message"
+                  title="What can we help with?"
+                  kicker="No drop-down purgatory — just a short form. We read every one."
+                  className="!mb-6"
+                />
+                <ContactForm />
+              </div>
+            </Reveal>
+          </div>
         </div>
-      </div>
-    </div>
+      </Section>
+
+      <Section tone="cream-2" className="!pt-0">
+        <div className="container-x">
+          <SectionHeading eyebrow="Find us" title="On the map." />
+          <MapEmbed />
+        </div>
+      </Section>
+    </>
   )
 }

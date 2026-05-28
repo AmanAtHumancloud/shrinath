@@ -1,86 +1,152 @@
-'use client'
+import type { Metadata } from 'next'
+import Link from 'next/link'
+import { ArrowUpRight, MapPinned, FlaskConical, Music, Trophy } from 'lucide-react'
 
-import { motion } from 'framer-motion'
-import { BookOpen, Calendar, Clock, Award, Users, ChevronRight } from 'lucide-react'
+import PageHero from '../components/sections/PageHero'
+import Section from '../components/ui/Section'
+import SectionHeading from '../components/ui/SectionHeading'
+import SmartImage from '../components/media/SmartImage'
+import Reveal from '../components/ui/Reveal'
+import { StaggerParent, StaggerItem } from '../components/ui/RevealStagger'
+import CTABand from '../components/sections/CTABand'
+import { slideInLeft, slideInRight } from '@/lib/motion'
+import { programs } from '@/lib/data/programs'
+import { photos } from '@/lib/images'
+
+export const metadata: Metadata = {
+  title: 'Academics',
+  description:
+    'Explore Shrinath Shikshan Sanstha\'s Pre-Primary, Primary, and Secondary programs — bilingual instruction, modern facilities, and a curriculum that grows with your child.',
+}
+
+const COCURRICULAR = [
+  { icon: Trophy, title: 'Sports & Athletics', body: 'Cricket, kabaddi, athletics and yoga — every child plays.', chip: 'bg-play-orange' },
+  { icon: Music, title: 'Performing Arts', body: 'Music, dance, drama, and the annual cultural day.', chip: 'bg-play-green' },
+  { icon: FlaskConical, title: 'STEM & Robotics', body: 'Hands-on labs, science fairs, and beginner robotics.', chip: 'bg-play-blue' },
+  { icon: MapPinned, title: 'Field Learning', body: 'Curated trips that turn the curriculum into experience.', chip: 'bg-play-yellow' },
+]
 
 export default function AcademicsPage() {
-  const programs = [
-    {
-      level: 'Pre-Primary',
-      ageGroup: '3-5 years',
-      description: 'Play-based learning focusing on cognitive and social development',
-      subjects: ['Language', 'Math Readiness', 'Art & Craft', 'Physical Activity']
-    },
-    {
-      level: 'Primary School',
-      ageGroup: '6-10 years',
-      description: 'Foundation building with emphasis on core subjects and values',
-      subjects: ['Mathematics', 'Science', 'English', 'Hindi', 'Social Studies']
-    },
-    {
-      level: 'Middle School',
-      ageGroup: '11-13 years',
-      description: 'Comprehensive curriculum preparing students for higher education',
-      subjects: ['Advanced Math', 'Physics', 'Chemistry', 'Biology', 'Computer Science']
-    },
-    {
-      level: 'Secondary School',
-      ageGroup: '14-16 years',
-      description: 'Board examination preparation with career guidance',
-      subjects: ['All Major Subjects', 'Career Counseling', 'Life Skills']
-    }
-  ]
-
   return (
-    <div className="pt-20">
-      <div className="bg-gradient-to-br from-emerald-700 to-emerald-900 text-white py-20">
-        <div className="max-w-7xl mx-auto px-4 text-center">
-          <motion.h1
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="text-4xl md:text-5xl font-bold mb-4"
-          >
-            Academic Programs
-          </motion.h1>
-          <p className="text-xl text-emerald-200">
-            Comprehensive education from Pre-Primary to Secondary School
-          </p>
-        </div>
-      </div>
+    <>
+      <PageHero
+        accent="blue"
+        eyebrow="Academics"
+        title={<>A curriculum that grows <span className="squiggle text-play-orange">with your child.</span></>}
+        subtitle="Three stages, one philosophy — meet children where they are, and walk them to where they could be."
+        image={photos.academicsHero}
+        imageAlt="Hands-on learning at Shrinath"
+      />
 
-      <div className="max-w-7xl mx-auto px-4 py-16">
-        <div className="grid gap-8">
-          {programs.map((program, index) => (
-            <motion.div
-              key={index}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.1 }}
-              className="card hover:border-blue-200 border-2 border-transparent"
-            >
-              <div className="flex flex-col md:flex-row gap-6">
-                <div className="md:w-1/4">
-                  <div className="text-3xl font-bold text-blue-800">{program.level}</div>
-                  <div className="text-gray-500 text-sm mt-1">Age: {program.ageGroup}</div>
+      {/* Three stage rows */}
+      <Section tone="cream">
+        <div className="container-x space-y-20 md:space-y-28">
+          {programs.map((p, idx) => {
+            const right = idx % 2 === 1
+            return (
+              <div key={p.slug} className="grid lg:grid-cols-12 gap-10 items-center">
+                <div className={`lg:col-span-7 ${right ? 'lg:order-2' : ''}`}>
+                  <Reveal variants={right ? slideInRight : slideInLeft}>
+                    <SmartImage
+                      src={photos[p.image]}
+                      alt={`${p.name} students at Shrinath`}
+                      aspect="3/2"
+                      rounded="xl"
+                      sizes="(min-width:1024px) 58vw, 100vw"
+                      imageClassName="transition-transform duration-700 ease-[cubic-bezier(.22,1,.36,1)] hover:scale-[1.03]"
+                    />
+                  </Reveal>
                 </div>
-                <div className="md:w-3/4">
-                  <p className="text-gray-700 mb-4">{program.description}</p>
-                  <div className="flex flex-wrap gap-2">
-                    {program.subjects.map((subject, i) => (
-                      <span key={i} className="bg-blue-50 text-blue-800 px-3 py-1 rounded-full text-sm">
-                        {subject}
-                      </span>
-                    ))}
-                  </div>
+                <div className={`lg:col-span-5 ${right ? 'lg:order-1' : ''}`}>
+                  <Reveal variants={right ? slideInLeft : slideInRight}>
+                    <span className="eyebrow">{p.classes}</span>
+                    <h2 className="mt-3 font-display text-[clamp(2rem,4vw,3rem)] leading-[1.05] text-deepblue-900">
+                      {p.name}
+                    </h2>
+                    <p className="mt-4 text-muted leading-relaxed">{p.blurb}</p>
+                    <ul className="mt-6 space-y-2 text-sm">
+                      {p.highlights.map((h) => (
+                        <li key={h} className="flex gap-2.5 items-start text-ink">
+                          <span className="mt-1.5 mark-diamond shrink-0" />
+                          <span>{h}</span>
+                        </li>
+                      ))}
+                    </ul>
+                    <Link href={`/academics/${p.slug}`} className="btn btn-primary mt-7">
+                      Inside {p.name} <ArrowUpRight size={15} />
+                    </Link>
+                  </Reveal>
                 </div>
-                <button className="text-blue-800 self-center">
-                  <ChevronRight size={24} />
-                </button>
               </div>
-            </motion.div>
-          ))}
+            )
+          })}
         </div>
-      </div>
-    </div>
+      </Section>
+
+      {/* Pedagogy */}
+      <Section tone="white">
+        <div className="container-x grid lg:grid-cols-12 gap-12 items-center">
+          <div className="lg:col-span-5">
+            <Reveal>
+              <span className="eyebrow">How we teach</span>
+              <h2 className="mt-3 font-display text-[clamp(2rem,4vw,3rem)] leading-[1.05] text-deepblue-900">
+                Activity-based, bilingual, and unhurried.
+              </h2>
+              <p className="mt-5 text-muted leading-relaxed">
+                We start with the child, not the chapter. Lessons are built in short, varied blocks; concepts are revisited in different forms; and every class has time for play, reading, and conversation.
+              </p>
+              <ul className="mt-6 space-y-2 text-sm text-ink">
+                {[
+                  'Marathi mother-tongue foundations + English fluency from Pre-Primary',
+                  'Maths labs, reading hours, and structured library periods',
+                  'Continuous assessment with two formal exam blocks per year',
+                  'Parent–teacher meetings every term, plus open-door communication',
+                ].map((b) => (
+                  <li key={b} className="flex gap-2.5 items-start">
+                    <span className="mt-1.5 mark-diamond shrink-0" />
+                    <span>{b}</span>
+                  </li>
+                ))}
+              </ul>
+            </Reveal>
+          </div>
+          <div className="lg:col-span-7">
+            <Reveal variants={slideInRight}>
+              <SmartImage src={photos.pedagogy} alt="Library reading session" aspect="4/3" rounded="xl" sizes="(min-width:1024px) 50vw, 100vw" />
+            </Reveal>
+          </div>
+        </div>
+      </Section>
+
+      {/* Co-curricular */}
+      <Section tone="cream-2">
+        <div className="container-x">
+          <SectionHeading
+            eyebrow="Beyond the textbook"
+            title="Co-curricular life at Shrinath."
+            kicker="Sports, arts, science, and travel — woven into every week, not bolted on."
+          />
+          <StaggerParent className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {COCURRICULAR.map(({ icon: Icon, title, body, chip }) => (
+              <StaggerItem key={title} className="group rounded-[24px] bg-white border-2 border-line-2 p-7 transition-all duration-400 hover:-translate-y-1 hover:border-transparent hover:shadow-card">
+                <div className={`inline-flex size-12 items-center justify-center rounded-2xl text-white transition-transform duration-400 group-hover:-rotate-6 group-hover:scale-110 ${chip}`}>
+                  <Icon size={20} strokeWidth={2.2} />
+                </div>
+                <h3 className="mt-5 font-display text-lg text-deepblue-900">{title}</h3>
+                <p className="mt-2 text-sm text-muted leading-relaxed">{body}</p>
+              </StaggerItem>
+            ))}
+          </StaggerParent>
+        </div>
+      </Section>
+
+      <CTABand
+        eyebrow="Admissions 2026–27"
+        title="Ready to apply?"
+        body="Limited seats across all stages. Submit an enquiry and we will guide you through the rest."
+        primaryCta={{ label: 'Apply now', href: '/admissions' }}
+        secondaryCta={{ label: 'Talk to us', href: '/contact' }}
+      />
+    </>
   )
 }

@@ -1,134 +1,140 @@
 'use client'
 
-import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { Menu, X, GraduationCap, Phone, Mail } from 'lucide-react'
-import { motion, AnimatePresence } from 'framer-motion'
+import Image from 'next/image'
+import { usePathname } from 'next/navigation'
+import { useEffect, useState } from 'react'
+import { Menu, X, ArrowUpRight } from 'lucide-react'
+import { AnimatePresence, motion } from 'framer-motion'
+import { SITE } from '@/lib/site'
+import { cn } from '@/lib/cn'
 
-const Navbar = () => {
-  const [isOpen, setIsOpen] = useState(false)
+export default function Navbar() {
+  const pathname = usePathname()
   const [scrolled, setScrolled] = useState(false)
+  const [open, setOpen] = useState(false)
 
   useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 20)
-    }
-    window.addEventListener('scroll', handleScroll)
-    return () => window.removeEventListener('scroll', handleScroll)
+    const onScroll = () => setScrolled(window.scrollY > 12)
+    onScroll()
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
   }, [])
 
-  const navLinks = [
-    { href: '/', label: 'Home' },
-    { href: '/about', label: 'About Us' },
-    { href: '/academics', label: 'Academics' },
-    { href: '/admissions', label: 'Admissions' },
-    { href: '/gallery', label: 'Gallery' },
-    { href: '/contact', label: 'Contact' },
-  ]
+  useEffect(() => {
+    // close mobile menu after navigation
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setOpen(false)
+  }, [pathname])
+
+  useEffect(() => {
+    document.documentElement.style.overflow = open ? 'hidden' : ''
+    return () => {
+      document.documentElement.style.overflow = ''
+    }
+  }, [open])
 
   return (
-    <>
-      {/* Top Bar */}
-      <div className="bg-blue-900 text-white py-2 hidden md:block">
-        <div className="max-w-7xl mx-auto px-4 flex justify-between items-center">
-          <div className="flex items-center space-x-6 text-sm">
-            <span className="flex items-center">
-              <Phone size={14} className="mr-1" /> +91 1234567890
+    <header
+      className={cn(
+        'sticky top-0 z-50 transition-all duration-300',
+        scrolled
+          ? 'bg-cream/85 backdrop-blur-md shadow-soft border-b border-line'
+          : 'bg-cream/0',
+      )}
+    >
+      <div className="container-x flex items-center justify-between py-4">
+        <Link href="/" className="flex items-center gap-3 group">
+          <span className="relative inline-flex size-12 items-center justify-center rounded-full bg-cream-2 ring-1 ring-saffron-300/60 overflow-hidden">
+            <Image src="/logo.png" alt="Shrinath Shikshan Sanstha" width={42} height={48} className="object-contain" priority />
+          </span>
+          <span className="hidden sm:flex flex-col leading-tight">
+            <span className="font-display text-[19px] text-deepblue-900 tracking-tight">
+              {SITE.shortName} Shikshan
             </span>
-            <span className="flex items-center">
-              <Mail size={14} className="mr-1" /> info@shrinathsanstha.edu
+            <span className="text-[10px] uppercase tracking-[0.28em] text-saffron-700">
+              Sanstha · Est. {SITE.founded}
             </span>
-          </div>
-          <div className="flex space-x-4 text-sm">
-            <Link href="/admissions" className="hover:text-amber-400 transition">
-              Online Admission
-            </Link>
-            <Link href="/contact" className="hover:text-amber-400 transition">
-              Enquiry
-            </Link>
-          </div>
+          </span>
+        </Link>
+
+        <nav className="hidden lg:flex items-center gap-1">
+          {SITE.navLinks.map((l) => {
+            const active = pathname === l.href || (l.href !== '/' && pathname.startsWith(l.href))
+            return (
+              <Link
+                key={l.href}
+                href={l.href}
+                className={cn(
+                  'relative px-4 py-2 text-sm font-medium transition rounded-full',
+                  active ? 'text-deepblue-900' : 'text-ink/70 hover:text-deepblue-900',
+                )}
+              >
+                {l.label}
+                {active && (
+                  <motion.span
+                    layoutId="nav-underline"
+                    className="absolute left-3 right-3 -bottom-0.5 h-[2px] bg-saffron-500 rounded-full"
+                    transition={{ type: 'spring', stiffness: 500, damping: 38 }}
+                  />
+                )}
+              </Link>
+            )
+          })}
+        </nav>
+
+        <div className="flex items-center gap-2">
+          <Link href="/admissions" className="hidden sm:inline-flex btn btn-saffron text-xs px-4 py-2.5">
+            Apply Now <ArrowUpRight size={14} />
+          </Link>
+          <button
+            type="button"
+            aria-label={open ? 'Close menu' : 'Open menu'}
+            aria-expanded={open}
+            onClick={() => setOpen((v) => !v)}
+            className="lg:hidden inline-flex items-center justify-center size-11 rounded-full border border-line text-ink hover:bg-cream-2 transition"
+          >
+            {open ? <X size={20} /> : <Menu size={20} />}
+          </button>
         </div>
       </div>
 
-      {/* Main Navbar */}
-      <nav className={`sticky top-0 z-50 transition-all duration-300 ${
-        scrolled ? 'bg-white shadow-lg' : 'bg-white/95'
-      }`}>
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="flex justify-between items-center h-16">
-            {/* Logo */}
-            <Link href="/" className="flex items-center space-x-2">
-              <GraduationCap className="h-8 w-8 text-blue-800" />
-              <div>
-                <h1 className="text-xl font-bold text-blue-900 leading-tight">
-                  Shrinath Shikshan
-                </h1>
-                <p className="text-xs text-gray-600 -mt-1">Sanstha</p>
-              </div>
-            </Link>
-
-            {/* Desktop Navigation */}
-            <div className="hidden md:flex items-center space-x-2">
-              {navLinks.map((link) => (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  className="px-3 py-2 text-gray-700 hover:text-blue-800 font-medium 
-                           transition-colors duration-200 rounded-lg hover:bg-blue-50"
-                >
-                  {link.label}
-                </Link>
-              ))}
-              <Link href="/admissions" className="btn-primary ml-4 text-sm">
-                Apply Now
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            initial={{ opacity: 0, y: -8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.25 }}
+            className="lg:hidden border-t border-line bg-cream"
+          >
+            <div className="container-x py-6">
+              <ul className="flex flex-col divide-y divide-line">
+                {SITE.navLinks.map((l) => {
+                  const active = pathname === l.href || (l.href !== '/' && pathname.startsWith(l.href))
+                  return (
+                    <li key={l.href}>
+                      <Link
+                        href={l.href}
+                        className={cn(
+                          'flex items-center justify-between py-3 font-display text-2xl tracking-tight',
+                          active ? 'text-deepblue-900' : 'text-ink/80',
+                        )}
+                      >
+                        <span>{l.label}</span>
+                        <ArrowUpRight size={18} className="text-saffron-600" />
+                      </Link>
+                    </li>
+                  )
+                })}
+              </ul>
+              <Link href="/admissions" className="btn btn-saffron mt-6 w-full">
+                Apply Now <ArrowUpRight size={14} />
               </Link>
             </div>
-
-            {/* Mobile Menu Button */}
-            <button
-              onClick={() => setIsOpen(!isOpen)}
-              className="md:hidden p-2 rounded-lg hover:bg-gray-100"
-            >
-              {isOpen ? <X size={24} /> : <Menu size={24} />}
-            </button>
-          </div>
-        </div>
-
-        {/* Mobile Menu */}
-        <AnimatePresence>
-          {isOpen && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
-              exit={{ opacity: 0, height: 0 }}
-              className="md:hidden bg-white border-t"
-            >
-              <div className="px-4 py-2 space-y-1">
-                {navLinks.map((link) => (
-                  <Link
-                    key={link.href}
-                    href={link.href}
-                    onClick={() => setIsOpen(false)}
-                    className="block px-3 py-2 text-gray-700 hover:text-blue-800 
-                             hover:bg-blue-50 rounded-lg transition"
-                  >
-                    {link.label}
-                  </Link>
-                ))}
-                <Link
-                  href="/admissions"
-                  className="block w-full text-center btn-primary mt-2"
-                  onClick={() => setIsOpen(false)}
-                >
-                  Apply Now
-                </Link>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </nav>
-    </>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </header>
   )
 }
-
-export default Navbar

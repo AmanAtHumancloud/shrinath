@@ -1,36 +1,67 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Shrinath Shikshan Sanstha — Branding website
 
-## Getting Started
+Next.js 16 · React 19 · Tailwind v4 · framer-motion · TypeScript.
 
-First, run the development server:
+## Setup
 
 ```bash
+npm install
+cp .env.example .env.local
+# edit .env.local — at minimum, set NEXT_PUBLIC_WEB3FORMS_KEY
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open http://localhost:3000.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Environment
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| Variable | Required | What it does |
+| --- | --- | --- |
+| `NEXT_PUBLIC_WEB3FORMS_KEY` | yes | Routes the contact + admissions forms to Web3Forms email delivery. Get a free key (no signup beyond an email address) at https://web3forms.com. |
+| `NEXT_PUBLIC_SITE_URL` | recommended | Used in metadata, sitemap, and OG URLs. Set to the production domain on deploy. Defaults to `http://localhost:3000`. |
 
-## Learn More
+After changing env vars, restart the dev server.
 
-To learn more about Next.js, take a look at the following resources:
+## Forms
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Both `ContactForm` and `AdmissionsForm` POST to `https://api.web3forms.com/submit` via `lib/web3forms.ts`. Includes a honeypot field (`botcheck`) and a 2-second client-side throttle. Submissions arrive in the inbox tied to the access key.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+If the key is missing, forms still render but show a clear error on submit pointing to setup.
 
-## Deploy on Vercel
+## Map
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+`app/components/sections/MapEmbed.tsx` embeds the Google Maps short link. If the iframe renders blank (Google occasionally blocks short links via X-Frame-Options), replace `src` with the long-form embed URL from Google Maps → Share → Embed a map.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Build
+
+```bash
+npm run lint
+npm run build
+npm start
+```
+
+## Project map
+
+```
+app/
+  page.tsx                   # Home
+  about/                     # About
+  academics/                 # Academics overview + 3 stage subroutes
+  admissions/                # Admissions: process, fees, FAQ, form
+  gallery/                   # Photo grid + lightbox
+  contact/                   # Details + form + map
+  components/
+    ui/                      # Container, Section, Button, Reveal, etc.
+    media/                   # SmartImage, Lightbox, GalleryGrid
+    forms/                   # FormShell, FormField, ContactForm, AdmissionsForm
+    sections/                # Hero, ProgramCards, Features, etc.
+    Navbar.tsx, Footer.tsx, TopBar.tsx, ScrollToTop.tsx
+  globals.css                # Tailwind v4 @theme tokens + components
+  layout.tsx                 # Fonts, metadata, chrome
+  sitemap.ts, robots.ts
+lib/
+  site.ts, motion.ts, web3forms.ts, images.ts, cn.ts
+  data/                      # Static content arrays
+public/
+  logo.png + 12 photos       # Renamed from generic image*.png to descriptive names
+```

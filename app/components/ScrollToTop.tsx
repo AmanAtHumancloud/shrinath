@@ -1,40 +1,35 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
-import { ChevronUp } from 'lucide-react'
+import { useEffect, useState } from 'react'
+import { ArrowUp } from 'lucide-react'
+import { AnimatePresence, motion } from 'framer-motion'
 
-const ScrollToTop = () => {
-  const [isVisible, setIsVisible] = useState(false)
+export default function ScrollToTop() {
+  const [show, setShow] = useState(false)
 
   useEffect(() => {
-    const toggleVisibility = () => {
-      setIsVisible(window.pageYOffset > 300)
-    }
-    window.addEventListener('scroll', toggleVisibility)
-    return () => window.removeEventListener('scroll', toggleVisibility)
+    const onScroll = () => setShow(window.scrollY > 600)
+    onScroll()
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
   }, [])
-
-  const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: 'smooth' })
-  }
 
   return (
     <AnimatePresence>
-      {isVisible && (
+      {show && (
         <motion.button
-          initial={{ opacity: 0, scale: 0 }}
-          animate={{ opacity: 1, scale: 1 }}
-          exit={{ opacity: 0, scale: 0 }}
-          onClick={scrollToTop}
-          className="fixed bottom-8 right-8 z-50 bg-blue-800 text-white w-12 h-12 rounded-full 
-                   shadow-lg hover:bg-blue-900 transition flex items-center justify-center"
+          type="button"
+          aria-label="Back to top"
+          onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: 12 }}
+          transition={{ duration: 0.25 }}
+          className="fixed bottom-6 right-6 z-40 inline-flex size-12 items-center justify-center rounded-full bg-deepblue-900 text-cream shadow-lift hover:bg-deepblue-700 transition"
         >
-          <ChevronUp size={24} />
+          <ArrowUp size={18} />
         </motion.button>
       )}
     </AnimatePresence>
   )
 }
-
-export default ScrollToTop
